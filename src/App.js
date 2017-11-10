@@ -144,6 +144,35 @@ class App extends Component {
 
     const pointPairs = loopifyInPairs(safePoints);
 
+    // ----------------
+
+    const xIntersects = _.flatten(
+      guideLines["x"].map(guideLine => {
+        let intersects = [];
+        pointPairs.forEach(([start, end], index) => {
+          if (
+            (start[0] >= guideLine && end[0] <= guideLine) ||
+            (start[0] <= guideLine && end[0] >= guideLine)
+          ) {
+            intersects.push([
+              index + 1,
+              // intersect(start, end, [0, guideLine], [1000, guideLine])
+              intersect(start, end, [guideLine, 0], [guideLine, 1000])
+            ]);
+          }
+        });
+        return intersects;
+      })
+    ).sort(function(a, b) {
+      return b[0] - a[0];
+    });
+
+    xIntersects.forEach((intersect, index) => {
+      safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+    });
+
+    // ----------------
+
     const yIntersects = _.flatten(
       guideLines["y"].map(guideLine => {
         let intersects = [];

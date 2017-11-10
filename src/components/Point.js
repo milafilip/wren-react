@@ -6,7 +6,7 @@ class Point extends Component {
     return (
       <circle
         id={`point-${i}`}
-        className={ auto ? 'autoPoint' : 'point' }
+        className={auto ? "autoPoint" : "point"}
         cx={x}
         cy={y}
         r="5"

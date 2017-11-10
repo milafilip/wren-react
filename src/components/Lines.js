@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import { offset } from "../utils/clipper";
 
-// console.time("intersect")
-// console.log(intersect([0, 0], [10, 10], [10, 0], [0, 10]))
-// console.timeEnd("intersect")
-
 class Lines extends Component {
   offsetPoints = (points, delta) => {
     return offset(points, delta).reduce((str, [x, y]) => {
@@ -13,52 +9,59 @@ class Lines extends Component {
     }, "");
   };
 
-  innerPolygons = () => {
+  innerPolygons = (axis, i) => {
     const { guideLines, points } = this.props;
-    const sortedGuidelines = guideLines.y.slice(0).reverse();
+    const sortedGuidelines = guideLines[axis].slice(0).sort(function(a, b) {
+      return a - b;
+    });
 
     const allGuideLines = [-Infinity, ...sortedGuidelines, Infinity];
 
-    return sortedGuidelines.map((guideLine, index) => {
-      return [
+    const polygons = [];
+    for (let index = 1; index < allGuideLines.length - 1; index++) {
+      polygons.push(
         <polygon
           points={this.offsetPoints(
             points.filter(p => {
               return (
-                p[1] >= allGuideLines[index] && p[1] <= allGuideLines[index + 1]
-              );
-            }),
-            -10
-          )}
-        />,
-        <polygon
-          points={this.offsetPoints(
-            points.filter(p => {
-              return (
-                p[1] >= allGuideLines[index + 1] &&
-                p[1] <= allGuideLines[index + 2]
+                p[i] >= allGuideLines[index - 1] && p[i] <= allGuideLines[index]
               );
             }),
             -10
           )}
         />
-      ];
-    });
-  };
+      );
 
-  // <polygon
-  //   points={this.offsetPoints(this.props.points.filter(p => p[1] >= guideLine), -10)}
-  // />
+      polygons.push(
+        <polygon
+          points={this.offsetPoints(
+            points.filter(p => {
+              return (
+                p[i] >= allGuideLines[index] && p[i] <= allGuideLines[index + 1]
+              );
+            }),
+            -10
+          )}
+        />
+      );
+    }
+
+    return polygons;
+  };
 
   render() {
     const { points, guideLines } = this.props;
 
-    const holes =
-      guideLines.y.length > 0 ? (
-        this.innerPolygons()
-      ) : (
-        <polygon points={this.offsetPoints(points, -10)} />
-      );
+    let holes = [];
+    if (guideLines.y.length > 0) {
+      holes.push(this.innerPolygons("y", 1));
+    }
+    if (guideLines.x.length > 0) {
+      holes.push(this.innerPolygons("x", 0));
+    }
+    if (holes.length === 0) {
+      holes.push(<polygon points={this.offsetPoints(points, -10)} />);
+    }
 
     if (points.length >= 3) {
       return (
