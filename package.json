@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "clipper-lib": "^6.2.1",
+    "lodash": "^4.17.4",
+    "mathjs": "^3.16.5",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
     "react-scripts": "1.0.17"

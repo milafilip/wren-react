@@ -26,10 +26,33 @@ polygon {
 }
 
 rect#dragRect {
-  fill: rgba(0,255,0,0.2);
+  fill: rgba(0, 255, 0, 0.2);
   stroke: green;
   stroke-width: 0.5px;
   stroke-dashoffset: 20;
   stroke-dasharray: 5 5;
   animation: dash 0.5s linear infinite;
 }
+
+.ruler {
+  fill: #ccc;
+}
+
+line.guideLine {
+  stroke: #ccc;
+  stroke-dasharray: 10 1;
+  stroke-width: 1px;
+}
+
+.point {
+  fill: black;
+}
+
+.autoPoint {
+  fill: red;
+  pointer-events: none;
+}
+
+body.default { cursor: default; }
+body.col-resize { cursor: col-resize; }
+body.row-resize { cursor: row-resize; }

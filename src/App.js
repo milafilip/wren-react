@@ -2,8 +2,21 @@ import React, { Component } from "react";
 import Point from "./components/Point";
 import Lines from "./components/Lines";
 import DragRect from "./components/DragRect";
+import Ruler from "./components/Ruler";
+import GuideLine from "./components/GuideLine";
+import { intersect } from "mathjs";
+import { loopifyInPairs } from "./utils/list";
+import _ from "lodash";
 
 class App extends Component {
+  actions = {
+    NOTHING: "nothing",
+    ADDING_GUIDE: "addingGuide",
+    DRAGGING_GUIDE: "draggingGuide",
+    DRAGGING_POINTS: "draggingPoints",
+    DRAWING_SELECT_BOX: "drawingSelectBox"
+  };
+
   state = {
     points: [
       [100, 400],
@@ -14,8 +27,12 @@ class App extends Component {
       // [100, 200],
       [100, 300]
     ],
-    activePoints: [],
-    dragRect: {}
+    guideLines: {
+      x: [],
+      y: []
+    },
+    dragRect: {},
+    action: [this.actions.NOTHING, null]
   };
 
   svgPoint = (x, y) => {
@@ -28,24 +45,60 @@ class App extends Component {
 
   handleMouseMove = event => {
     const [x, y] = this.svgPoint(event.pageX, event.pageY);
+    switch (this.state.action[0]) {
+      case this.actions.DRAGGING_POINTS:
+        this.state.action[1].forEach(index => {
+          this.setState(prevState => {
+            prevState.points[index][0] = x;
+            prevState.points[index][1] = y;
+            return prevState;
+          });
+        });
+        break;
 
-    this.state.activePoints.forEach(index => {
-      this.setState(prevState => {
-        prevState.points[index][0] = x;
-        prevState.points[index][1] = y;
-        return prevState;
-      });
+      case this.actions.DRAWING_SELECT_BOX:
+        break;
+
+      case this.actions.ADDING_GUIDE:
+        const pos = { x, y };
+        this.setState(prevState => {
+          const last = prevState.guideLines[this.state.action[1]].length - 1;
+          prevState.guideLines[this.state.action[1]][last] =
+            pos[this.state.action[1]];
+          return prevState;
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  handleMouseDownOnRuler = axis => e => {
+    e.stopPropagation();
+    console.log("RULER", axis);
+    this.setState(prevState => {
+      prevState.guideLines[axis].push(10);
+      prevState.action = [this.actions.ADDING_GUIDE, axis];
+      return prevState;
     });
   };
 
   setActivePoint = id => e => {
     e.stopPropagation();
-    console.log('active point')
-    this.setState({ activePoints: [id] });
+    console.log("active point");
+    this.setState({ action: [this.actions.DRAGGING_POINTS, [id]] });
+  };
+
+  handleGuideLineMouseDown = (axis, index) => e => {
+    e.stopPropagation();
+    this.setState({ action: [this.actions.DRAGGING_GUIDE, [axis, index]] });
+    console.log(this.state.action);
   };
 
   handleMouseUp = e => {
     this.setState({
+      action: [this.actions.NOTHING, null],
       activePoints: [],
       dragRect: {}
     });
@@ -54,13 +107,66 @@ class App extends Component {
   handleMouseDown = e => {
     e.stopPropagation();
     const [x, y] = this.svgPoint(e.pageX, e.pageY);
-    this.setState({ dragRect: {x,y} });
-  }
+    this.setState({ dragRect: { x, y } });
+  };
+
+  setCursor = cursor => {
+    this.setState({ cursor });
+  };
+
+  points = safePoints => {
+    let pointIndex = -1;
+    return safePoints.map((p, i) => {
+      if (!p[2]) pointIndex++;
+      return (
+        <Point
+          key={i}
+          i={pointIndex}
+          x={p[0]}
+          y={p[1]}
+          auto={p[2]}
+          setActivePoint={this.setActivePoint}
+        />
+      );
+    });
+  };
 
   render() {
-    const { points, dragRect } = this.state;
+    const { points, dragRect, guideLines, cursor } = this.state;
 
-    const dRect = dragRect.x ? <DragRect x={dragRect.x} y={dragRect.y} /> : <g />
+    const safePoints = points.slice(0);
+
+    const dRect = dragRect.x ? (
+      <DragRect x={dragRect.x} y={dragRect.y} />
+    ) : (
+      <g />
+    );
+
+    const pointPairs = loopifyInPairs(safePoints);
+
+    const yIntersects = _.flatten(
+      guideLines["y"].map(guideLine => {
+        let intersects = [];
+        pointPairs.forEach(([start, end], index) => {
+          if (
+            (start[1] >= guideLine && end[1] <= guideLine) ||
+            (start[1] <= guideLine && end[1] >= guideLine)
+          ) {
+            intersects.push([
+              index + 1,
+              intersect(start, end, [0, guideLine], [1000, guideLine])
+            ]);
+          }
+        });
+        return intersects;
+      })
+    ).sort(function(a, b) {
+      return b[0] - a[0];
+    });
+
+    yIntersects.forEach((intersect, index) => {
+      safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+    });
 
     return (
       <svg
@@ -70,19 +176,30 @@ class App extends Component {
         onMouseUp={this.handleMouseUp}
         onMouseDown={this.handleMouseDown}
       >
-        <Lines points={points} />
-        <g id="points">
-          {points.map((p, i) => (
-            <Point
-              key={i}
-              i={i}
-              x={p[0]}
-              y={p[1]}
-              setActivePoint={this.setActivePoint}
-            />
-          ))}
-        </g>
+        <Lines points={safePoints} guideLines={guideLines} />
+
+        <g id="points">{this.points(safePoints)}</g>
         {dRect}
+
+        <Ruler axis="x" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
+        <Ruler axis="y" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
+
+        {guideLines.x.map((value, index) => (
+          <GuideLine
+            axis="x"
+            key={`x${index}`}
+            value={value}
+            handleGuideLineMouseDown={this.handleGuideLineMouseDown}
+          />
+        ))}
+        {guideLines.y.map((value, index) => (
+          <GuideLine
+            axis="y"
+            key={`y${index}`}
+            value={value}
+            handleGuideLineMouseDown={this.handleGuideLineMouseDown}
+          />
+        ))}
       </svg>
     );
   }
