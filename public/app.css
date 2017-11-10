@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#svg {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+polygon {
+  fill: none;
+  stroke: black;
+}
+
+.line {
+  stroke: red;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+rect#dragRect {
+  fill: rgba(0,255,0,0.2);
+  stroke: green;
+  stroke-width: 0.5px;
+  stroke-dashoffset: 20;
+  stroke-dasharray: 5 5;
+  animation: dash 0.5s linear infinite;
+}
