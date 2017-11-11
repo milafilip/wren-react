@@ -132,9 +132,9 @@ class App extends Component {
   };
 
   handleMouseDown = e => {
-    e.stopPropagation();
-    const [x, y] = this.svgPoint(e.pageX, e.pageY);
-    this.setState({ dragRect: { x, y } });
+    // e.stopPropagation();
+    // const [x, y] = this.svgPoint(e.pageX, e.pageY);
+    // this.setState({ dragRect: { x, y } });
   };
 
   setCursor = cursor => {

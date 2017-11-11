@@ -1,8 +1,8 @@
 export function clockwiseSort(input, firstPointIndex = 0) {
-  if (!Array.isArray(input) || input.length === 0) return input
+  if (!Array.isArray(input) || input.length === 0) return input;
 
   const b = bounds(input);
-  const arr = []
+  const arr = [];
 
   for (let i = 0; i < input.length; i++) {
     arr[i] = [
@@ -10,7 +10,7 @@ export function clockwiseSort(input, firstPointIndex = 0) {
       input[i][1],
       input[i][0] - b.offsetX,
       input[i][1] - b.offsetY
-    ]
+    ];
   }
 
   const base = Math.atan2(arr[firstPointIndex][3], arr[firstPointIndex][2]);
@@ -31,9 +31,9 @@ export function bounds(points) {
   const b = points.reduce(
     (o, v) => {
       if (v[0] < o.minX) o.minX = v[0];
-      else if (v[0] > o.maxX) o.maxX = v[0];
+      if (v[0] > o.maxX) o.maxX = v[0];
       if (v[1] < o.minY) o.minY = v[0];
-      else if (v[1] > o.maxY) o.maxY = v[0];
+      if (v[1] > o.maxY) o.maxY = v[0];
       return o;
     },
     {
@@ -44,8 +44,31 @@ export function bounds(points) {
     }
   );
 
-  b.offsetX = (b.maxX - b.minX) / 2;
-  b.offsetY = (b.maxY - b.minY) / 2;
+  b.offsetX = b.minX + (b.maxX - b.minX) / 2;
+  b.offsetY = b.minY + (b.maxY - b.minY) / 2;
 
   return b;
+}
+
+function centroid(pts) {
+  var first = pts[0],
+    last = pts[pts.length - 1];
+  if (first[0] != last[0] || first[1] != last[1]) pts.push(first);
+  var twicearea = 0,
+    x = 0,
+    y = 0,
+    nPts = pts.length,
+    p1,
+    p2,
+    f;
+  for (var i = 0, j = nPts - 1; i < nPts; j = i++) {
+    p1 = pts[i];
+    p2 = pts[j];
+    f = p1[0] * p2[1] - p2[0] * p1[1];
+    twicearea += f;
+    x += (p1[0] + p2[0]) * f;
+    y += (p1[1] + p2[1]) * f;
+  }
+  f = twicearea * 3;
+  return [x / f, y / f];
 }

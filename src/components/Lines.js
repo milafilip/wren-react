@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { offset } from "../utils/clipper";
-import { clockwiseSort } from "../utils/points"
+import { clockwiseSort } from "../utils/points";
 
 class Lines extends Component {
   offsetPoints = (points, delta) => {
@@ -10,6 +10,11 @@ class Lines extends Component {
     }, "");
   };
 
+  handleClick = points => e => {
+    e.stopPropagation();
+    console.log(points, clockwiseSort(points));
+  };
+
   innerPolygons = (axis, i) => {
     const { guideLines, points } = this.props;
     const sortedGuidelines = guideLines[axis].slice(0).sort(function(a, b) {
@@ -17,40 +22,42 @@ class Lines extends Component {
     });
 
     const allGuideLines = [-Infinity, ...sortedGuidelines, Infinity];
+    console.log(allGuideLines);
 
     const polygons = [];
 
     for (let index = 1; index < allGuideLines.length - 1; index++) {
-
       // if (index === 2) {
       //   console.log(JSON.stringify(clockwiseSort(points)))
       // }
 
+      let p = points.filter(p => {
+        return (
+          Math.ceil(p[i]) >= allGuideLines[index - 1] &&
+          Math.floor(p[i]) <= allGuideLines[index]
+        );
+      });
+
       polygons.push(
         <polygon
-          points={this.offsetPoints(
-            clockwiseSort(points).filter(p => {
-              return (
-                p[i] >= allGuideLines[index - 1] && p[i] <= allGuideLines[index]
-              );
-            }),
-            -10
-          )}
+          onClick={this.handleClick(p)}
+          points={this.offsetPoints(clockwiseSort(p), -10)}
         />
       );
 
-      // polygons.push(
-      //   <polygon
-      //     points={this.offsetPoints(
-      //       points.filter(p => {
-      //         return (
-      //           p[i] >= allGuideLines[index] && p[i] <= allGuideLines[index + 1]
-      //         );
-      //       }),
-      //       -10
-      //     )}
-      //   />
-      // );
+      p = points.filter(p => {
+        return (
+          Math.ceil(p[i]) >= allGuideLines[index] &&
+          Math.floor(p[i]) <= allGuideLines[index + 1]
+        );
+      });
+
+      polygons.push(
+        <polygon
+          onClick={this.handleClick(p)}
+          points={this.offsetPoints(clockwiseSort(p), -10)}
+        />
+      );
     }
 
     return polygons;

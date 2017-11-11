@@ -53,6 +53,12 @@ line.guideLine {
   pointer-events: none;
 }
 
-body.default { cursor: default; }
-body.col-resize { cursor: col-resize; }
-body.row-resize { cursor: row-resize; }
+body.default {
+  cursor: default;
+}
+body.col-resize {
+  cursor: col-resize;
+}
+body.row-resize {
+  cursor: row-resize;
+}
