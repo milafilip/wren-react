@@ -158,6 +158,10 @@ class App extends Component {
     });
   };
 
+  save = event => {
+    console.log(this.state.points);
+  };
+
   render() {
     const { points, dragRect, guideLines, cursor } = this.state;
 
@@ -258,6 +262,10 @@ class App extends Component {
             handleGuideLineMouseDown={this.handleGuideLineMouseDown}
           />
         ))}
+
+        <text x="50" y="50" onClick={this.save}>
+          SAVE
+        </text>
       </svg>
     );
   }
