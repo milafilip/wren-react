@@ -1,13 +1,10 @@
 import React, { Component } from "react";
-import { offsetPoints } from "../utils/clipper";
+import { offset, offsetPoints } from "../utils/clipper";
 import { clockwiseSort } from "../utils/points";
+import Outline from "./Outline";
+import Hole from "./Hole";
 
 class Lines extends Component {
-  handleClick = points => e => {
-    e.stopPropagation();
-    console.log(points, clockwiseSort(points));
-  };
-
   innerPolygons = (axis, i) => {
     const { guideLines, points } = this.props;
     const sortedGuidelines = guideLines[axis].slice(0).sort(function(a, b) {
@@ -26,12 +23,7 @@ class Lines extends Component {
         );
       });
 
-      polygons.push(
-        <polygon
-          onClick={this.handleClick(p)}
-          points={offsetPoints(clockwiseSort(p), -10)}
-        />
-      );
+      polygons.push(<Hole points={offset(clockwiseSort(p), -10)} />);
 
       p = points.filter(p => {
         return (
@@ -40,12 +32,7 @@ class Lines extends Component {
         );
       });
 
-      polygons.push(
-        <polygon
-          onClick={this.handleClick(p)}
-          points={offsetPoints(clockwiseSort(p), -10)}
-        />
-      );
+      polygons.push(<Hole points={offset(clockwiseSort(p), -10)} />);
     }
 
     return polygons;
@@ -62,13 +49,13 @@ class Lines extends Component {
       holes.push(this.innerPolygons("x", 0));
     }
     if (holes.length === 0) {
-      holes.push(<polygon points={offsetPoints(points, -10)} />);
+      holes.push(<Hole points={offset(points, -10)} />);
     }
 
     if (points.length >= 3) {
       return (
         <g id="lines">
-          <polygon points={offsetPoints(points, 10)} />
+          <Outline points={offset(points, 10)} />
           {holes}
         </g>
       );
