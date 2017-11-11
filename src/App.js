@@ -4,6 +4,7 @@ import Lines from "./components/Lines";
 import DragRect from "./components/DragRect";
 import Ruler from "./components/Ruler";
 import GuideLine from "./components/GuideLine";
+import config from "./config";
 import { intersect } from "mathjs";
 import { loopifyInPairs } from "./utils/list";
 import _ from "lodash";
@@ -45,6 +46,8 @@ class App extends Component {
 
   handleMouseMove = event => {
     const [x, y] = this.svgPoint(event.pageX, event.pageY);
+    const pos = { x, y };
+
     switch (this.state.action[0]) {
       case this.actions.DRAGGING_POINTS:
         this.state.action[1].forEach(index => {
@@ -59,8 +62,17 @@ class App extends Component {
       case this.actions.DRAWING_SELECT_BOX:
         break;
 
+      case this.actions.DRAGGING_GUIDE:
+        this.setState(prevState => {
+          prevState.guideLines[this.state.action[1][0]][
+            this.state.action[1][1]
+          ] =
+            pos[this.state.action[1][0]];
+          return prevState;
+        });
+        break;
+
       case this.actions.ADDING_GUIDE:
-        const pos = { x, y };
         this.setState(prevState => {
           const last = prevState.guideLines[this.state.action[1]].length - 1;
           prevState.guideLines[this.state.action[1]][last] =
@@ -91,12 +103,27 @@ class App extends Component {
   };
 
   handleGuideLineMouseDown = (axis, index) => e => {
+    console.log({ axis, index });
     e.stopPropagation();
     this.setState({ action: [this.actions.DRAGGING_GUIDE, [axis, index]] });
     console.log(this.state.action);
   };
 
   handleMouseUp = e => {
+    const [x, y] = this.svgPoint(e.pageX, e.pageY);
+    const { action } = this.state;
+
+    if (action[0] === this.actions.DRAGGING_GUIDE) {
+      if (action[1][0] === "y") {
+        if (y < 100 || y > 400) {
+          this.setState(prevState => {
+            prevState.guideLines[action[1][0]].splice(action[1][1], 1);
+            return prevState;
+          });
+        }
+      }
+    }
+
     this.setState({
       action: [this.actions.NOTHING, null],
       activePoints: [],
@@ -217,6 +244,7 @@ class App extends Component {
           <GuideLine
             axis="x"
             key={`x${index}`}
+            index={index}
             value={value}
             handleGuideLineMouseDown={this.handleGuideLineMouseDown}
           />
@@ -225,6 +253,7 @@ class App extends Component {
           <GuideLine
             axis="y"
             key={`y${index}`}
+            index={index}
             value={value}
             handleGuideLineMouseDown={this.handleGuideLineMouseDown}
           />

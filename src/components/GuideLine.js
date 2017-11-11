@@ -17,6 +17,7 @@ class GuideLine extends Component {
     }
     return (
       <line
+        className="guideLine"
         onMouseDown={handleGuideLineMouseDown(axis, index)}
         onMouseOver={() => window.setCursor(cursor)}
         onMouseOut={() => window.setCursor()}
@@ -24,7 +25,6 @@ class GuideLine extends Component {
         x2={x2}
         y1={y1}
         y2={y2}
-        className="guideLine"
       />
     );
   }
