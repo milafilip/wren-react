@@ -1,5 +1,12 @@
 import ClipperLib from "clipper-lib";
 
+export function offsetPoints(points, delta) {
+  return offset(points, delta).reduce((str, [x, y]) => {
+    str += `${x},${y} `;
+    return str;
+  }, "");
+}
+
 export function offset(points, delta, scale = 100) {
   try {
     const paths = [

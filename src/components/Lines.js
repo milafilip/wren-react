@@ -1,15 +1,8 @@
 import React, { Component } from "react";
-import { offset } from "../utils/clipper";
+import { offsetPoints } from "../utils/clipper";
 import { clockwiseSort } from "../utils/points";
 
 class Lines extends Component {
-  offsetPoints = (points, delta) => {
-    return offset(points, delta).reduce((str, [x, y]) => {
-      str += `${x},${y} `;
-      return str;
-    }, "");
-  };
-
   handleClick = points => e => {
     e.stopPropagation();
     console.log(points, clockwiseSort(points));
@@ -22,15 +15,10 @@ class Lines extends Component {
     });
 
     const allGuideLines = [-Infinity, ...sortedGuidelines, Infinity];
-    console.log(allGuideLines);
 
     const polygons = [];
 
     for (let index = 1; index < allGuideLines.length - 1; index++) {
-      // if (index === 2) {
-      //   console.log(JSON.stringify(clockwiseSort(points)))
-      // }
-
       let p = points.filter(p => {
         return (
           Math.ceil(p[i]) >= allGuideLines[index - 1] &&
@@ -41,7 +29,7 @@ class Lines extends Component {
       polygons.push(
         <polygon
           onClick={this.handleClick(p)}
-          points={this.offsetPoints(clockwiseSort(p), -10)}
+          points={offsetPoints(clockwiseSort(p), -10)}
         />
       );
 
@@ -55,7 +43,7 @@ class Lines extends Component {
       polygons.push(
         <polygon
           onClick={this.handleClick(p)}
-          points={this.offsetPoints(clockwiseSort(p), -10)}
+          points={offsetPoints(clockwiseSort(p), -10)}
         />
       );
     }
@@ -74,14 +62,13 @@ class Lines extends Component {
       holes.push(this.innerPolygons("x", 0));
     }
     if (holes.length === 0) {
-      holes.push(<polygon points={this.offsetPoints(points, -10)} />);
+      holes.push(<polygon points={offsetPoints(points, -10)} />);
     }
 
     if (points.length >= 3) {
       return (
         <g id="lines">
-          <polygon points={this.offsetPoints(points, 0)} className="line" />
-          <polygon points={this.offsetPoints(points, 10)} />
+          <polygon points={offsetPoints(points, 10)} />
           {holes}
         </g>
       );
@@ -90,14 +77,5 @@ class Lines extends Component {
     }
   }
 }
-
-// <polygon points={this.offsetPoints(points, -10)} />
-
-// <polygon
-//   points={this.offsetPoints(points.filter(p => p[1] < 300), -10)}
-// />
-// <polygon
-//   points={this.offsetPoints(points.filter(p => p[1] >= 300), -10)}
-// />
 
 export default Lines;
