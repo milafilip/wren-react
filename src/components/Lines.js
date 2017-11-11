@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { offset } from "../utils/clipper";
+import { clockwiseSort } from "../utils/points"
 
 class Lines extends Component {
   offsetPoints = (points, delta) => {
@@ -18,11 +19,17 @@ class Lines extends Component {
     const allGuideLines = [-Infinity, ...sortedGuidelines, Infinity];
 
     const polygons = [];
+
     for (let index = 1; index < allGuideLines.length - 1; index++) {
+
+      // if (index === 2) {
+      //   console.log(JSON.stringify(clockwiseSort(points)))
+      // }
+
       polygons.push(
         <polygon
           points={this.offsetPoints(
-            points.filter(p => {
+            clockwiseSort(points).filter(p => {
               return (
                 p[i] >= allGuideLines[index - 1] && p[i] <= allGuideLines[index]
               );
@@ -32,18 +39,18 @@ class Lines extends Component {
         />
       );
 
-      polygons.push(
-        <polygon
-          points={this.offsetPoints(
-            points.filter(p => {
-              return (
-                p[i] >= allGuideLines[index] && p[i] <= allGuideLines[index + 1]
-              );
-            }),
-            -10
-          )}
-        />
-      );
+      // polygons.push(
+      //   <polygon
+      //     points={this.offsetPoints(
+      //       points.filter(p => {
+      //         return (
+      //           p[i] >= allGuideLines[index] && p[i] <= allGuideLines[index + 1]
+      //         );
+      //       }),
+      //       -10
+      //     )}
+      //   />
+      // );
     }
 
     return polygons;
