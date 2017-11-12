@@ -72,16 +72,23 @@ class Lines extends Component {
       holes.map(points => loopifyInPairs(points).map(Sheet("inner")))
     );
 
+    // console.log(outerSheets)
+
     const output = {
       outline: outline.map(this.normalize(b)),
       holes: holes.map(hole => hole.map(this.normalize(b)).reverse()),
-      sheets: outerSheets.map(subSheet =>
-        subSheet.map(sheet => sheet.map(this.normalize(b)))
-      )
+      sheets: {
+        outer: outerSheets.map(subSheet =>
+          subSheet.map(sheet => sheet.map(this.normalize(b)))
+        ),
+        inner: innerSheets.map(subSheet =>
+          subSheet.map(sheet => sheet.map(this.normalize(b)))
+        )
+      }
     };
 
     // console.log(outline)
-    // console.log(JSON.stringify(output))
+    console.log(JSON.stringify(output));
     // sheets.map(sheet => sheet.map(console.log))
 
     if (points.length >= 3) {

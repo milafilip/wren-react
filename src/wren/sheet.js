@@ -33,6 +33,14 @@ export const Sheet = inout => pair => {
     const length = Math.min(totalLength - maxSheetHeight * i, maxSheetHeight);
     const rotate = rotateAroundPoint(sortedStart, _angle);
     const [x, y] = sortedStart;
+    // arr.push(
+    //   sheet(
+    //     [x + (maxSheetHeight * i - notchHeight * i) * d, y],
+    //     width,
+    //     (length + notchHeight * i) * d,
+    //     dir
+    //   ).map(rotate)
+    // );
     arr.push(
       sheet(
         [x + (maxSheetHeight * i - notchHeight * i) * d, y],
