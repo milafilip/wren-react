@@ -188,7 +188,9 @@ class App extends Component {
     });
 
     xIntersects.forEach((intersect, index) => {
-      safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+      if (intersect[1]) {
+        safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+      }
     });
 
     // ----------------
@@ -214,7 +216,9 @@ class App extends Component {
     });
 
     yIntersects.forEach((intersect, index) => {
-      safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+      if (intersect[1]) {
+        safePoints.splice(intersect[0], 0, [...intersect[1], true]);
+      }
     });
 
     return (

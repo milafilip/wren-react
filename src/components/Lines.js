@@ -14,32 +14,25 @@ const halfFinWidth = inputs.fin.width / 2;
 const sortNumeric = (a, b) => a - b;
 
 class Lines extends Component {
-  innerPolygons = (allGuideLines, axis, i) => {
+  innerPolygons = allGuideLines => {
     const { points } = this.props;
 
+    let p = [];
     const polygons = [];
-    for (let index = 1; index < allGuideLines[axis].length - 1; index++) {
-      let p = points.filter(p => {
-        return (
-          Math.ceil(p[i]) >= allGuideLines[axis][index - 1] &&
-          Math.floor(p[i]) <= allGuideLines[axis][index]
-        );
-      });
 
-      polygons.push(offset(clockwiseSort(p), -halfFinWidth));
-
-      p = points.filter(p => {
-        return (
-          Math.ceil(p[i]) >= allGuideLines[axis][index] &&
-          Math.floor(p[i]) <= allGuideLines[axis][index + 1]
-        );
-      });
-
-      polygons.push(offset(clockwiseSort(p), -halfFinWidth));
+    for (let x = 1; x < allGuideLines.x.length; x++) {
+      for (let y = 1; y < allGuideLines.y.length; y++) {
+        p = points.filter(p => {
+          return (
+            Math.ceil(p[0]) >= allGuideLines.x[x - 1] &&
+            Math.floor(p[0]) <= allGuideLines.x[x] &&
+            Math.ceil(p[1]) >= allGuideLines.y[y - 1] &&
+            Math.floor(p[1]) <= allGuideLines.y[y]
+          );
+        });
+        polygons.push(offset(clockwiseSort(p), -halfFinWidth));
+      }
     }
-
-    // console.log(polygons)
-
     return polygons.filter(arr => arr.length > 0);
   };
 
@@ -56,18 +49,14 @@ class Lines extends Component {
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
-    // make a new array of guidelines sorted top>bottom or left>right
-    const allGuideLines = {
-      x: [-Infinity, ...guideLines.x.slice(0).sort(sortNumeric), Infinity],
-      y: [-Infinity, ...guideLines.y.slice(0).sort(sortNumeric), Infinity]
-    };
-
     let holes = [];
-    if (guideLines.y.length > 0) {
-      holes.push(...this.innerPolygons(allGuideLines, "y", 1));
-    }
-    if (guideLines.x.length > 0) {
-      holes.push(...this.innerPolygons(allGuideLines, "x", 0));
+    if (guideLines.x.length + guideLines.y.length > 0) {
+      // make a new array of guidelines sorted top>bottom or left>right
+      const allGuideLines = {
+        x: [-Infinity, ...guideLines.x.slice(0).sort(sortNumeric), Infinity],
+        y: [-Infinity, ...guideLines.y.slice(0).sort(sortNumeric), Infinity]
+      };
+      holes.push(...this.innerPolygons(allGuideLines));
     }
     if (holes.length === 0) {
       holes.push(offset(points, -halfFinWidth));
