@@ -11,22 +11,18 @@ import { Sheet } from "../wren/sheet";
 
 const halfFinWidth = inputs.fin.width / 2;
 
-class Lines extends Component {
-  innerPolygons = (axis, i) => {
-    const { guideLines, points } = this.props;
-    const sortedGuidelines = guideLines[axis].slice(0).sort(function(a, b) {
-      return a - b;
-    });
+const sortNumeric = (a, b) => a - b;
 
-    const allGuideLines = [-Infinity, ...sortedGuidelines, Infinity];
+class Lines extends Component {
+  innerPolygons = (allGuideLines, axis, i) => {
+    const { points } = this.props;
 
     const polygons = [];
-
-    for (let index = 1; index < allGuideLines.length - 1; index++) {
+    for (let index = 1; index < allGuideLines[axis].length - 1; index++) {
       let p = points.filter(p => {
         return (
-          Math.ceil(p[i]) >= allGuideLines[index - 1] &&
-          Math.floor(p[i]) <= allGuideLines[index]
+          Math.ceil(p[i]) >= allGuideLines[axis][index - 1] &&
+          Math.floor(p[i]) <= allGuideLines[axis][index]
         );
       });
 
@@ -34,8 +30,8 @@ class Lines extends Component {
 
       p = points.filter(p => {
         return (
-          Math.ceil(p[i]) >= allGuideLines[index] &&
-          Math.floor(p[i]) <= allGuideLines[index + 1]
+          Math.ceil(p[i]) >= allGuideLines[axis][index] &&
+          Math.floor(p[i]) <= allGuideLines[axis][index + 1]
         );
       });
 
@@ -60,12 +56,18 @@ class Lines extends Component {
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
+    // make a new array of guidelines sorted top>bottom or left>right
+    const allGuideLines = {
+      x: [-Infinity, ...guideLines.x.slice(0).sort(sortNumeric), Infinity],
+      y: [-Infinity, ...guideLines.y.slice(0).sort(sortNumeric), Infinity]
+    };
+
     let holes = [];
     if (guideLines.y.length > 0) {
-      holes.push(...this.innerPolygons("y", 1));
+      holes.push(...this.innerPolygons(allGuideLines, "y", 1));
     }
     if (guideLines.x.length > 0) {
-      holes.push(...this.innerPolygons("x", 0));
+      holes.push(...this.innerPolygons(allGuideLines, "x", 0));
     }
     if (holes.length === 0) {
       holes.push(offset(points, -halfFinWidth));
@@ -122,6 +124,9 @@ class Lines extends Component {
 */
       return (
         <g id="lines">
+          <g id="mainline">
+            <Outline points={points} />
+          </g>
           {holes.map((hole, index) => (
             <Hole key={["hole", index].join("-")} points={hole} />
           ))}

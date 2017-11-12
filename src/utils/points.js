@@ -51,6 +51,8 @@ export function clockwiseSort(input, firstPointIndex = 0) {
     arr[i] = [input[i][0] - b.offsetX, input[i][1] - b.offsetY, ...input[i]];
   }
 
+  // const cent = centroid(arr.map(a => a.slice(0,2)))
+  // const base = Math.atan2(cent[1], cent[0])
   const base = Math.atan2(arr[firstPointIndex][1], arr[firstPointIndex][0]);
 
   return arr

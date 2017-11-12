@@ -25,6 +25,11 @@ polygon {
   }
 }
 
+#mainline polygon {
+  stroke-width: 10px;
+  stroke: #EEE;
+}
+
 rect#dragRect {
   fill: rgba(0, 255, 0, 0.2);
   stroke: green;

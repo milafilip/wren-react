@@ -225,7 +225,7 @@ class App extends Component {
         onMouseUp={this.handleMouseUp}
         onMouseDown={this.handleMouseDown}
       >
-        <g transform="scale(1)" vector-effect="non-scaling-stroke">
+        <g transform="scale(1)">
           <Lines points={safePoints} guideLines={guideLines} />
           <g id="points">{this.points(safePoints)}</g>
         </g>
