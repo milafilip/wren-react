@@ -79,31 +79,52 @@ class Lines extends Component {
       holes: holes.map(hole => hole.map(this.normalize(b)).reverse()),
       sheets: {
         outer: outerSheets.map(subSheet =>
-          subSheet.map(sheet => sheet.map(this.normalize(b)))
+          subSheet.map(sheet => ({
+            pos: this.normalize(b)(sheet.pos),
+            rot: sheet.rot,
+            pts: sheet.pts.map(this.normalize(b))
+          }))
         ),
         inner: innerSheets.map(subSheet =>
-          subSheet.map(sheet => sheet.map(this.normalize(b)))
+          subSheet.map(sheet => ({
+            pos: this.normalize(b)(sheet.pos),
+            rot: sheet.rot,
+            pts: sheet.pts.map(this.normalize(b))
+          }))
         )
       }
     };
 
-    // console.log(outline)
     console.log(JSON.stringify(output));
+    // console.log(JSON.stringify(output.sheets.outer))
+    // outerSheets.map(sheet => console.log(sheet.length))
     // sheets.map(sheet => sheet.map(console.log))
 
     if (points.length >= 3) {
       return (
         <g id="lines">
           <Outline points={outline} />
-          {holes.map(hole => <Hole points={hole} />)}
+          {holes.map((hole, index) => (
+            <Hole key={["hole", index].join("-")} points={hole} />
+          ))}
           <g id="outer">
-            {outerSheets.map(sheet =>
-              sheet.map(points => <Outline points={points} />)
+            {outerSheets.map((sheets, index1) =>
+              sheets.map((sheet, index2) => (
+                <Outline
+                  key={["outer", index1, index2].join("-")}
+                  points={sheet.pts}
+                />
+              ))
             )}
           </g>
           <g id="inner">
-            {innerSheets.map(sheet =>
-              sheet.map(points => <Outline points={points} />)
+            {innerSheets.map((sheets, index1) =>
+              sheets.map((sheet, index2) => (
+                <Outline
+                  key={["inner", index1, index2].join("-")}
+                  points={sheet.pts}
+                />
+              ))
             )}
           </g>
         </g>
