@@ -41,7 +41,7 @@ rect#dragRect {
 line.guideLine {
   stroke: #ccc;
   stroke-dasharray: 10 1;
-  stroke-width: 1px;
+  stroke-width: 2px;
 }
 
 .point {

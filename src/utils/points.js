@@ -70,8 +70,8 @@ export function bounds(points) {
     (o, v) => {
       if (v[0] < o.minX) o.minX = v[0];
       if (v[0] > o.maxX) o.maxX = v[0];
-      if (v[1] < o.minY) o.minY = v[0];
-      if (v[1] > o.maxY) o.maxY = v[0];
+      if (v[1] < o.minY) o.minY = v[1];
+      if (v[1] > o.maxY) o.maxY = v[1];
       return o;
     },
     {

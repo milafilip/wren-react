@@ -1,39 +1,32 @@
-import React, { Component } from "react";
-import Point from "./components/Point";
-import Lines from "./components/Lines";
-import DragRect from "./components/DragRect";
-import Ruler from "./components/Ruler";
-import GuideLine from "./components/GuideLine";
+import _ from "lodash";
 import config from "./config";
+import DragRect from "./components/DragRect";
+import GuideLine from "./components/GuideLine";
+import inputs, { points } from "./wren/inputs";
+import Lines from "./components/Lines";
+import Point from "./components/Point";
+import React, { Component } from "react";
+import Ruler from "./components/Ruler";
 import { intersect } from "mathjs";
 import { loopifyInPairs } from "./utils/list";
-import _ from "lodash";
 
 class App extends Component {
   actions = {
-    NOTHING: "nothing",
     ADDING_GUIDE: "addingGuide",
     DRAGGING_GUIDE: "draggingGuide",
     DRAGGING_POINTS: "draggingPoints",
-    DRAWING_SELECT_BOX: "drawingSelectBox"
+    DRAWING_SELECT_BOX: "drawingSelectBox",
+    NOTHING: "nothing"
   };
 
   state = {
-    points: [
-      [100, 400],
-      [400, 400],
-      [400, 300],
-      // [400, 200],
-      [250, 100],
-      // [100, 200],
-      [100, 300]
-    ],
+    action: [this.actions.NOTHING, undefined],
+    dragRect: {},
     guideLines: {
       x: [],
       y: []
     },
-    dragRect: {},
-    action: [this.actions.NOTHING, null]
+    points: points(inputs).map(([x, y]) => [x + 200, y + 150])
   };
 
   svgPoint = (x, y) => {
@@ -158,10 +151,6 @@ class App extends Component {
     });
   };
 
-  save = event => {
-    console.log(this.state.points);
-  };
-
   render() {
     const { points, dragRect, guideLines, cursor } = this.state;
 
@@ -236,14 +225,10 @@ class App extends Component {
         onMouseUp={this.handleMouseUp}
         onMouseDown={this.handleMouseDown}
       >
-        <Lines points={safePoints} guideLines={guideLines} />
-
-        <g id="points">{this.points(safePoints)}</g>
-        {dRect}
-
-        <Ruler axis="x" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
-        <Ruler axis="y" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
-
+        <g transform="scale(1)" vector-effect="non-scaling-stroke">
+          <Lines points={safePoints} guideLines={guideLines} />
+          <g id="points">{this.points(safePoints)}</g>
+        </g>
         {guideLines.x.map((value, index) => (
           <GuideLine
             axis="x"
@@ -263,9 +248,9 @@ class App extends Component {
           />
         ))}
 
-        <text x="50" y="50" onClick={this.save}>
-          SAVE
-        </text>
+        {dRect}
+        <Ruler axis="x" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
+        <Ruler axis="y" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
       </svg>
     );
   }

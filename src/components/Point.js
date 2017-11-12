@@ -1,3 +1,5 @@
+import config from "../config";
+import inputs from "../wren/inputs";
 import React, { Component } from "react";
 
 class Point extends Component {
@@ -9,7 +11,7 @@ class Point extends Component {
         className={auto ? "autoPoint" : "point"}
         cx={x}
         cy={y}
-        r="5"
+        r={inputs.fin.width / 2}
         onMouseDown={setActivePoint(i)}
       />
     );

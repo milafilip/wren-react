@@ -1,8 +1,9 @@
 import { length, angle, rotateAroundPoint } from "../utils/points";
+import inputs from "./inputs";
+import * as THREE from "three";
 
-const maxSheetHeight = 200;
+const maxSheetHeight = inputs.material.height;
 const notchHeight = 0;
-const width = 122;
 
 const NUM_DIMENSIONS = 2;
 
@@ -20,6 +21,7 @@ function sheet([x, y], width, length, dir, pos, rot) {
     pos,
     rot
   };
+  // console.log(ob)
   if (dimensions(2)) ob.pts = ob.pts.map(rotate);
   return ob;
 }
@@ -46,7 +48,7 @@ export const Sheet = inout => pair => {
     arr.push(
       sheet(
         [x + (maxSheetHeight * i - notchHeight * i) * d, y],
-        width,
+        inputs.material.width,
         (length + notchHeight * i) * d,
         dir,
         sortedStart,
