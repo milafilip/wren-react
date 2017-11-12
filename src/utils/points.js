@@ -48,26 +48,21 @@ export function clockwiseSort(input, firstPointIndex = 0) {
   const arr = [];
 
   for (let i = 0; i < input.length; i++) {
-    arr[i] = [
-      input[i][0],
-      input[i][1],
-      input[i][0] - b.offsetX,
-      input[i][1] - b.offsetY
-    ];
+    arr[i] = [input[i][0] - b.offsetX, input[i][1] - b.offsetY, ...input[i]];
   }
 
-  const base = Math.atan2(arr[firstPointIndex][3], arr[firstPointIndex][2]);
+  const base = Math.atan2(arr[firstPointIndex][1], arr[firstPointIndex][0]);
 
   return arr
     .sort(function(a, b) {
       return (
-        Math.atan2(b[3], b[2]) -
-        Math.atan2(a[3], a[2]) +
-        (Math.atan2(b[3], b[2]) > base ? -2 * Math.PI : 0) +
-        (Math.atan2(a[3], a[2]) > base ? 2 * Math.PI : 0)
+        Math.atan2(b[1], b[0]) -
+        Math.atan2(a[1], a[0]) +
+        (Math.atan2(b[1], b[0]) > base ? -2 * Math.PI : 0) +
+        (Math.atan2(a[1], a[0]) > base ? 2 * Math.PI : 0)
       );
     })
-    .map(points => points.slice(0, 2));
+    .map(points => points.slice(2));
 }
 
 export function bounds(points) {

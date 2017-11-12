@@ -4,7 +4,8 @@ import { clockwiseSort, bounds } from "../utils/points";
 import { loopifyInPairs } from "../utils/list";
 import Outline from "./Outline";
 import Hole from "./Hole";
-import Sheet from "./Sheet";
+import _ from "lodash";
+import { Sheet } from "../wren/sheet";
 
 class Lines extends Component {
   innerPolygons = (axis, i) => {
@@ -49,7 +50,8 @@ class Lines extends Component {
 
   render() {
     const { points, guideLines } = this.props;
-    const outline = offset(points, 10);
+
+    const outline = offset(points.filter(p => p.length === 2), 10);
 
     let holes = [];
     if (guideLines.y.length > 0) {
@@ -64,18 +66,39 @@ class Lines extends Component {
 
     const b = bounds(outline);
     // convert top-left 0,0 to bottom-left 0,0
+
+    const outerSheets = loopifyInPairs(outline).map(Sheet("outer"));
+    let innerSheets = _.flatten(
+      holes.map(points => loopifyInPairs(points).map(Sheet("inner")))
+    );
+
     const output = {
       outline: outline.map(this.normalize(b)),
-      holes: holes.map(hole => hole.map(this.normalize(b)).reverse())
+      holes: holes.map(hole => hole.map(this.normalize(b)).reverse()),
+      sheets: outerSheets.map(subSheet =>
+        subSheet.map(sheet => sheet.map(this.normalize(b)))
+      )
     };
+
+    // console.log(outline)
     // console.log(JSON.stringify(output))
+    // sheets.map(sheet => sheet.map(console.log))
 
     if (points.length >= 3) {
       return (
         <g id="lines">
           <Outline points={outline} />
           {holes.map(hole => <Hole points={hole} />)}
-          {loopifyInPairs(outline).map(pair => <Sheet pair={pair} />)}
+          <g id="outer">
+            {outerSheets.map(sheet =>
+              sheet.map(points => <Outline points={points} />)
+            )}
+          </g>
+          <g id="inner">
+            {innerSheets.map(sheet =>
+              sheet.map(points => <Outline points={points} />)
+            )}
+          </g>
         </g>
       );
     } else {

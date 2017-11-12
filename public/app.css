@@ -49,7 +49,7 @@ line.guideLine {
 }
 
 .autoPoint {
-  fill: red;
+  fill: #AAA;
   pointer-events: none;
 }
 
@@ -61,4 +61,11 @@ body.col-resize {
 }
 body.row-resize {
   cursor: row-resize;
+}
+
+#outer polygon {
+  stroke: blue;
+}
+#inner polygon {
+  stroke: red;
 }
