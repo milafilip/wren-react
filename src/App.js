@@ -11,18 +11,11 @@ import { bounds } from "./utils/points";
 import { intersect } from "mathjs";
 import { loopifyInPairs } from "./utils/list";
 import { svgPoint } from "./utils/svg";
+import actions from "./actions";
 
 class App extends Component {
-  actions = {
-    ADDING_GUIDE: "addingGuide",
-    DRAGGING_GUIDE: "draggingGuide",
-    DRAGGING_POINTS: "draggingPoints",
-    DRAWING_SELECT_BOX: "drawingSelectBox",
-    NOTHING: "nothing"
-  };
-
   state = {
-    action: [this.actions.NOTHING, undefined],
+    action: [actions.NOTHING, undefined],
     dragRect: {},
     guideLines: {
       x: [],
@@ -39,7 +32,7 @@ class App extends Component {
     this.svgPoint = svgPoint(this.refs.svg);
   }
 
-  handleLineDoubleClick = index => e => {
+  handleLineClick = index => e => {
     e.stopPropagation();
     const point = this.svgPoint(e.pageX, e.pageY);
     const i = index + 1;
@@ -59,7 +52,7 @@ class App extends Component {
     const pos = { x, y };
 
     switch (this.state.action[0]) {
-      case this.actions.DRAGGING_POINTS:
+      case actions.DRAGGING_POINTS:
         this.state.action[1].forEach(index => {
           this.setState(prevState => {
             prevState.points[index][0] = x;
@@ -69,10 +62,10 @@ class App extends Component {
         });
         break;
 
-      case this.actions.DRAWING_SELECT_BOX:
+      case actions.DRAWING_SELECT_BOX:
         break;
 
-      case this.actions.DRAGGING_GUIDE:
+      case actions.DRAGGING_GUIDE:
         this.setState(prevState => {
           prevState.guideLines[this.state.action[1][0]][
             this.state.action[1][1]
@@ -82,7 +75,7 @@ class App extends Component {
         });
         break;
 
-      case this.actions.ADDING_GUIDE:
+      case actions.ADDING_GUIDE:
         this.setState(prevState => {
           const last = prevState.guideLines[this.state.action[1]].length - 1;
           prevState.guideLines[this.state.action[1]][last] =
@@ -101,7 +94,7 @@ class App extends Component {
     console.log("RULER", axis);
     this.setState(prevState => {
       prevState.guideLines[axis].push(10);
-      prevState.action = [this.actions.ADDING_GUIDE, axis];
+      prevState.action = [actions.ADDING_GUIDE, axis];
       return prevState;
     });
   };
@@ -109,7 +102,7 @@ class App extends Component {
   handleGuideLineMouseDown = (axis, index) => e => {
     console.log({ axis, index });
     e.stopPropagation();
-    this.setState({ action: [this.actions.DRAGGING_GUIDE, [axis, index]] });
+    this.setState({ action: [actions.DRAGGING_GUIDE, [axis, index]] });
     console.log(this.state.action);
   };
 
@@ -118,7 +111,7 @@ class App extends Component {
     const { action } = this.state;
     const b = bounds(this.state.points);
 
-    if (action[0] === this.actions.DRAGGING_GUIDE) {
+    if (action[0] === actions.DRAGGING_GUIDE) {
       if (
         (action[1][0] === "y" && (y < b.minY || y > b.maxY)) ||
         (action[1][0] === "x" && (x < b.minX || x > b.maxX))
@@ -131,7 +124,7 @@ class App extends Component {
     }
 
     this.setState({
-      action: [this.actions.NOTHING, null],
+      action: [actions.NOTHING, null],
       activePoints: [],
       dragRect: {}
     });
@@ -163,7 +156,7 @@ class App extends Component {
   setActivePoint = id => e => {
     e.stopPropagation();
     console.log("active point");
-    this.setState({ action: [this.actions.DRAGGING_POINTS, [id]] });
+    this.setState({ action: [actions.DRAGGING_POINTS, [id]] });
   };
 
   points = safePoints => {
@@ -277,7 +270,7 @@ class App extends Component {
             <Lines
               points={safePoints}
               guideLines={guideLines}
-              handleLineDoubleClick={this.handleLineDoubleClick}
+              handleLineClick={this.handleLineClick}
               layers={layers}
             />
             <g id="points">{this.points(safePoints)}</g>

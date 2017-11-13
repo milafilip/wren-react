@@ -3,7 +3,7 @@ import { loopifyInPairs } from "../utils/list";
 
 class MainLine extends Component {
   render() {
-    const { points, handleLineDoubleClick } = this.props;
+    const { points, handleLineClick } = this.props;
     const pointPairs = loopifyInPairs(points);
     return pointPairs.map(([start, end], index) => (
       <line
@@ -11,7 +11,7 @@ class MainLine extends Component {
         y1={start[1]}
         x2={end[0]}
         y2={end[1]}
-        onMouseDown={handleLineDoubleClick(index)}
+        onMouseDown={handleLineClick(index)}
       />
     ));
   }

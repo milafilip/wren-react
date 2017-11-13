@@ -46,7 +46,7 @@ class Lines extends Component {
   };
 
   render() {
-    const { points, guideLines, handleLineDoubleClick, layers } = this.props;
+    const { points, guideLines, handleLineClick, layers } = this.props;
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
@@ -126,10 +126,7 @@ class Lines extends Component {
       return (
         <g id="lines">
           <g id="mainline">
-            <MainLine
-              handleLineDoubleClick={handleLineDoubleClick}
-              points={points}
-            />
+            <MainLine handleLineClick={handleLineClick} points={points} />
           </g>
           {holes.map((hole, index) => (
             <Hole key={["hole", index].join("-")} points={hole} />
