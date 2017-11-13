@@ -46,7 +46,7 @@ class Lines extends Component {
   };
 
   render() {
-    const { points, guideLines, handleLineDoubleClick } = this.props;
+    const { points, guideLines, handleLineDoubleClick, layers } = this.props;
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
@@ -99,12 +99,30 @@ class Lines extends Component {
     // outerSheets.map(sheet => console.log(sheet.length))
     // sheets.map(sheet => sheet.map(console.log))
 
+    const inner = layers.has("INNER")
+      ? innerSheets.map((sheets, index1) =>
+          sheets.map((sheet, index2) => (
+            <Outline
+              key={["inner", index1, index2].join("-")}
+              points={sheet.pts}
+            />
+          ))
+        )
+      : "";
+    const outer = layers.has("OUTER") ? (
+      outerSheets.map((sheets, index1) =>
+        sheets.map((sheet, index2) => (
+          <Outline
+            key={["outer", index1, index2].join("-")}
+            points={sheet.pts}
+          />
+        ))
+      )
+    ) : (
+      <Outline points={outline} />
+    );
+
     if (points.length >= 3) {
-      // <Outline points={outline} />
-
-      /*
-
-*/
       return (
         <g id="lines">
           <g id="mainline">
@@ -116,26 +134,8 @@ class Lines extends Component {
           {holes.map((hole, index) => (
             <Hole key={["hole", index].join("-")} points={hole} />
           ))}
-          <g id="outer">
-            {outerSheets.map((sheets, index1) =>
-              sheets.map((sheet, index2) => (
-                <Outline
-                  key={["outer", index1, index2].join("-")}
-                  points={sheet.pts}
-                />
-              ))
-            )}
-          </g>
-          <g id="inner">
-            {innerSheets.map((sheets, index1) =>
-              sheets.map((sheet, index2) => (
-                <Outline
-                  key={["inner", index1, index2].join("-")}
-                  points={sheet.pts}
-                />
-              ))
-            )}
-          </g>
+          <g id="outer">{outer}</g>
+          <g id="inner">{inner}</g>
         </g>
       );
     } else {

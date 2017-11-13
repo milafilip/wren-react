@@ -20,7 +20,7 @@ class Point extends Component {
         cy={y}
         r={inputs.fin.width / 2}
         onMouseDown={setActivePoint(i)}
-        onDoubleClick={handleDoubleClickPoint([x, y])}
+        onDoubleClick={handleDoubleClickPoint([x, y], auto)}
       />
     );
   }

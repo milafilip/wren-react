@@ -29,7 +29,8 @@ class App extends Component {
     points: points(inputs).map(([x, y]) => [
       x + config.offset,
       y + config.offset
-    ])
+    ]),
+    layers: new Set()
   };
 
   svgPoint = (x, y) => {
@@ -149,8 +150,9 @@ class App extends Component {
     this.setState({ cursor });
   };
 
-  handleDoubleClickPoint = point => event => {
+  handleDoubleClickPoint = (point, auto) => event => {
     event.stopPropagation();
+    if (auto) return;
     this.setState(prevState => {
       console.log(
         prevState.points.map(p => p.join(",")),
@@ -183,8 +185,18 @@ class App extends Component {
     });
   };
 
+  toggleLayer = layerName => e => {
+    e.stopPropagation();
+    this.setState(prevState => {
+      prevState.layers.has(layerName)
+        ? prevState.layers.delete(layerName)
+        : prevState.layers.add(layerName);
+      return prevState;
+    });
+  };
+
   render() {
-    const { points, dragRect, guideLines, cursor } = this.state;
+    const { points, dragRect, guideLines, cursor, layers } = this.state;
 
     const safePoints = points.slice(0);
 
@@ -254,44 +266,61 @@ class App extends Component {
     });
 
     return (
-      <svg
-        id="svg"
-        ref="svg"
-        onMouseMove={this.handleMouseMove}
-        onMouseUp={this.handleMouseUp}
-        onMouseDown={this.handleMouseDown}
-      >
-        <g transform="scale(1)">
-          <Lines
-            points={safePoints}
-            guideLines={guideLines}
-            handleLineDoubleClick={this.handleLineDoubleClick}
-          />
-          <g id="points">{this.points(safePoints)}</g>
-        </g>
-        {guideLines.x.map((value, index) => (
-          <GuideLine
-            axis="x"
-            key={`x${index}`}
-            index={index}
-            value={value}
-            handleGuideLineMouseDown={this.handleGuideLineMouseDown}
-          />
-        ))}
-        {guideLines.y.map((value, index) => (
-          <GuideLine
-            axis="y"
-            key={`y${index}`}
-            index={index}
-            value={value}
-            handleGuideLineMouseDown={this.handleGuideLineMouseDown}
-          />
-        ))}
+      <div>
+        <svg
+          id="svg"
+          ref="svg"
+          onMouseMove={this.handleMouseMove}
+          onMouseUp={this.handleMouseUp}
+          onMouseDown={this.handleMouseDown}
+        >
+          <g transform="scale(1)">
+            <Lines
+              points={safePoints}
+              guideLines={guideLines}
+              handleLineDoubleClick={this.handleLineDoubleClick}
+              layers={layers}
+            />
+            <g id="points">{this.points(safePoints)}</g>
+          </g>
+          {guideLines.x.map((value, index) => (
+            <GuideLine
+              axis="x"
+              key={`x${index}`}
+              index={index}
+              value={value}
+              handleGuideLineMouseDown={this.handleGuideLineMouseDown}
+            />
+          ))}
+          {guideLines.y.map((value, index) => (
+            <GuideLine
+              axis="y"
+              key={`y${index}`}
+              index={index}
+              value={value}
+              handleGuideLineMouseDown={this.handleGuideLineMouseDown}
+            />
+          ))}
 
-        {dRect}
-        <Ruler axis="x" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
-        <Ruler axis="y" handleMouseDownOnRuler={this.handleMouseDownOnRuler} />
-      </svg>
+          {dRect}
+          <Ruler
+            axis="x"
+            handleMouseDownOnRuler={this.handleMouseDownOnRuler}
+          />
+          <Ruler
+            axis="y"
+            handleMouseDownOnRuler={this.handleMouseDownOnRuler}
+          />
+        </svg>
+        <div id="controls">
+          <label onClick={this.toggleLayer("INNER")}>
+            Inner <input type="checkbox" checked={layers.has("INNER")} />
+          </label>
+          <label onClick={this.toggleLayer("OUTER")}>
+            Outer <input type="checkbox" checked={layers.has("OUTER")} />
+          </label>
+        </div>
+      </div>
     );
   }
 }
