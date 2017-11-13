@@ -2,6 +2,7 @@ import _ from "lodash";
 import Hole from "./Hole";
 import inputs from "../wren/inputs";
 import Outline from "./Outline";
+import MainLine from "./MainLine";
 import config from "../config";
 import React, { Component } from "react";
 import { clockwiseSort, bounds } from "../utils/points";
@@ -45,7 +46,7 @@ class Lines extends Component {
   };
 
   render() {
-    const { points, guideLines } = this.props;
+    const { points, guideLines, handleLineDoubleClick } = this.props;
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
@@ -102,19 +103,15 @@ class Lines extends Component {
       // <Outline points={outline} />
 
       /*
-  {innerSheets.map((sheets, index1) =>
-    sheets.map((sheet, index2) => (
-      <Outline
-        key={["inner", index1, index2].join("-")}
-        points={sheet.pts}
-      />
-    ))
-  )}
+
 */
       return (
         <g id="lines">
           <g id="mainline">
-            <Outline points={points} />
+            <MainLine
+              handleLineDoubleClick={handleLineDoubleClick}
+              points={points}
+            />
           </g>
           {holes.map((hole, index) => (
             <Hole key={["hole", index].join("-")} points={hole} />
@@ -129,7 +126,16 @@ class Lines extends Component {
               ))
             )}
           </g>
-          <g id="inner" />
+          <g id="inner">
+            {innerSheets.map((sheets, index1) =>
+              sheets.map((sheet, index2) => (
+                <Outline
+                  key={["inner", index1, index2].join("-")}
+                  points={sheet.pts}
+                />
+              ))
+            )}
+          </g>
         </g>
       );
     } else {

@@ -26,7 +26,10 @@ class App extends Component {
       x: [],
       y: []
     },
-    points: points(inputs).map(([x, y]) => [x + 200, y + 150])
+    points: points(inputs).map(([x, y]) => [
+      x + config.offset,
+      y + config.offset
+    ])
   };
 
   svgPoint = (x, y) => {
@@ -35,6 +38,18 @@ class App extends Component {
     point.y = y;
     point = point.matrixTransform(this.refs.svg.getCTM().inverse());
     return [Math.floor(point.x), Math.floor(point.y)];
+  };
+
+  handleLineDoubleClick = index => e => {
+    e.stopPropagation();
+    const point = this.svgPoint(e.pageX, e.pageY);
+
+    this.setState(prevState => {
+      prevState.points.splice(index + 1, 0, point);
+      return prevState;
+    });
+    console.log(index);
+    // console.log(this.props.points, clockwiseSort(this.props.points));
   };
 
   handleMouseMove = event => {
@@ -134,6 +149,22 @@ class App extends Component {
     this.setState({ cursor });
   };
 
+  handleDoubleClickPoint = point => event => {
+    event.stopPropagation();
+    this.setState(prevState => {
+      console.log(
+        prevState.points.map(p => p.join(",")),
+        point.join(","),
+        prevState.points.indexOf(point)
+      );
+      prevState.points.splice(
+        prevState.points.map(p => p.join(",")).indexOf(point.join(",")),
+        1
+      );
+      return prevState;
+    });
+  };
+
   points = safePoints => {
     let pointIndex = -1;
     return safePoints.map((p, i) => {
@@ -146,6 +177,7 @@ class App extends Component {
           y={p[1]}
           auto={p[2]}
           setActivePoint={this.setActivePoint}
+          handleDoubleClickPoint={this.handleDoubleClickPoint}
         />
       );
     });
@@ -230,7 +262,11 @@ class App extends Component {
         onMouseDown={this.handleMouseDown}
       >
         <g transform="scale(1)">
-          <Lines points={safePoints} guideLines={guideLines} />
+          <Lines
+            points={safePoints}
+            guideLines={guideLines}
+            handleLineDoubleClick={this.handleLineDoubleClick}
+          />
           <g id="points">{this.points(safePoints)}</g>
         </g>
         {guideLines.x.map((value, index) => (

@@ -25,9 +25,10 @@ polygon {
   }
 }
 
-#mainline polygon {
-  stroke-width: 10px;
-  stroke: #EEE;
+#mainline line {
+  stroke-width: 18px;
+  stroke: #FFF;
+  // stroke: #EEE;
 }
 
 rect#dragRect {

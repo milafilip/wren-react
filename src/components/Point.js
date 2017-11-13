@@ -4,7 +4,14 @@ import React, { Component } from "react";
 
 class Point extends Component {
   render() {
-    const { x, y, i, setActivePoint, auto } = this.props;
+    const {
+      x,
+      y,
+      i,
+      setActivePoint,
+      auto,
+      handleDoubleClickPoint
+    } = this.props;
     return (
       <circle
         id={`point-${i}`}
@@ -13,6 +20,7 @@ class Point extends Component {
         cy={y}
         r={inputs.fin.width / 2}
         onMouseDown={setActivePoint(i)}
+        onDoubleClick={handleDoubleClickPoint([x, y])}
       />
     );
   }
