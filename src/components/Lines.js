@@ -16,13 +16,20 @@ const sortNumeric = (a, b) => a - b;
 
 class Lines extends Component {
   innerPolygons = allGuideLines => {
-    const { points } = this.props;
+    let { points } = this.props;
+
+    // add guideline crossings to points
+    allGuideLines.x.slice(1, -1).map(x => {
+      allGuideLines.y.slice(1, -1).map(y => {
+        points.push([x, y]);
+      });
+    });
 
     let p = [];
     const polygons = [];
 
-    for (let x = 1; x < allGuideLines.x.length; x++) {
-      for (let y = 1; y < allGuideLines.y.length; y++) {
+    for (let y = 1; y < allGuideLines.y.length; y++) {
+      for (let x = 1; x < allGuideLines.x.length; x++) {
         p = points.filter(p => {
           return (
             Math.ceil(p[0]) >= allGuideLines.x[x - 1] &&
@@ -46,7 +53,13 @@ class Lines extends Component {
   };
 
   render() {
-    const { points, guideLines, handleLineClick, layers } = this.props;
+    const {
+      points,
+      guideLines,
+      handleLineClick,
+      layers,
+      originalPoints
+    } = this.props;
 
     const outline = offset(points.filter(p => p.length === 2), halfFinWidth);
 
@@ -94,7 +107,7 @@ class Lines extends Component {
       }
     };
 
-    console.log(JSON.stringify(output));
+    // console.log(JSON.stringify(output));
     // console.log(JSON.stringify(output.sheets.outer))
     // outerSheets.map(sheet => console.log(sheet.length))
     // sheets.map(sheet => sheet.map(console.log))
@@ -126,7 +139,10 @@ class Lines extends Component {
       return (
         <g id="lines">
           <g id="mainline">
-            <MainLine handleLineClick={handleLineClick} points={points} />
+            <MainLine
+              handleLineClick={handleLineClick}
+              points={originalPoints}
+            />
           </g>
           {holes.map((hole, index) => (
             <Hole key={["hole", index].join("-")} points={hole} />

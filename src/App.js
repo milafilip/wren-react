@@ -191,6 +191,7 @@ class App extends Component {
     const { points, dragRect, guideLines, cursor, layers } = this.state;
 
     const safePoints = points.slice(0);
+    const originalPoints = points.slice(0);
 
     const dRect = dragRect.x ? (
       <DragRect x={dragRect.x} y={dragRect.y} />
@@ -269,6 +270,7 @@ class App extends Component {
           <g transform="scale(1)">
             <Lines
               points={safePoints}
+              originalPoints={originalPoints}
               guideLines={guideLines}
               handleLineClick={this.handleLineClick}
               layers={layers}
