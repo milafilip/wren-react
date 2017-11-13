@@ -11,7 +11,7 @@ class MainLine extends Component {
         y1={start[1]}
         x2={end[0]}
         y2={end[1]}
-        onDoubleClick={handleLineDoubleClick(index)}
+        onMouseDown={handleLineDoubleClick(index)}
       />
     ));
   }

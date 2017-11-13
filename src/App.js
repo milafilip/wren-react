@@ -7,6 +7,7 @@ import Lines from "./components/Lines";
 import Point from "./components/Point";
 import React, { Component } from "react";
 import Ruler from "./components/Ruler";
+import { bounds } from "./utils/points";
 import { intersect } from "mathjs";
 import { loopifyInPairs } from "./utils/list";
 
@@ -44,12 +45,15 @@ class App extends Component {
   handleLineDoubleClick = index => e => {
     e.stopPropagation();
     const point = this.svgPoint(e.pageX, e.pageY);
+    const i = index + 1;
 
     this.setState(prevState => {
-      prevState.points.splice(index + 1, 0, point);
+      console.log(prevState.points);
+      prevState.points.splice(i, 0, point);
       return prevState;
     });
-    console.log(index);
+    setTimeout(() => this.setActivePoint(i)(e), 10);
+
     // console.log(this.props.points, clockwiseSort(this.props.points));
   };
 
@@ -121,15 +125,17 @@ class App extends Component {
   handleMouseUp = e => {
     const [x, y] = this.svgPoint(e.pageX, e.pageY);
     const { action } = this.state;
+    const b = bounds(this.state.points);
 
     if (action[0] === this.actions.DRAGGING_GUIDE) {
-      if (action[1][0] === "y") {
-        if (y < 100 || y > 400) {
-          this.setState(prevState => {
-            prevState.guideLines[action[1][0]].splice(action[1][1], 1);
-            return prevState;
-          });
-        }
+      if (
+        (action[1][0] === "y" && (y < b.minY || y > b.maxY)) ||
+        (action[1][0] === "x" && (x < b.minX || x > b.maxX))
+      ) {
+        this.setState(prevState => {
+          prevState.guideLines[action[1][0]].splice(action[1][1], 1);
+          return prevState;
+        });
       }
     }
 

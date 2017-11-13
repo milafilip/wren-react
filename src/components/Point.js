@@ -12,13 +12,15 @@ class Point extends Component {
       auto,
       handleDoubleClickPoint
     } = this.props;
+    const radius = inputs.fin.width / 2
+    // const radius = 60
     return (
       <circle
         id={`point-${i}`}
         className={auto ? "autoPoint" : "point"}
         cx={x}
         cy={y}
-        r={inputs.fin.width / 2}
+        r={radius}
         onMouseDown={setActivePoint(i)}
         onDoubleClick={handleDoubleClickPoint([x, y], auto)}
       />

@@ -27,9 +27,10 @@ polygon {
 }
 
 #mainline line {
-  stroke-width: 18px;
-  stroke: #FFF;
-  // stroke: #EEE;
+  cursor: copy;
+  stroke-width: 20px;
+  // stroke: #FFF;
+  stroke: #EEE;
 }
 
 rect#dragRect {
@@ -53,6 +54,7 @@ line.guideLine {
 
 .point {
   fill: black;
+  cursor: move;
 }
 
 .autoPoint {

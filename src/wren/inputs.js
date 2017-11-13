@@ -42,7 +42,7 @@ export const points = inputs => {
       inputs.dimensions.width,
       inputs.dimensions.height - inputs.dimensions.wallHeight
     ],
-    [inputs.dimensions.width / 2 + inputs.dimensions.roofOffset, 0],
+    // [inputs.dimensions.width / 2 + inputs.dimensions.roofOffset, 0],
     [0, inputs.dimensions.height - inputs.dimensions.wallHeight]
   ];
 };

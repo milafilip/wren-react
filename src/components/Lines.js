@@ -94,7 +94,7 @@ class Lines extends Component {
       }
     };
 
-    // console.log(JSON.stringify(output));
+    console.log(JSON.stringify(output));
     // console.log(JSON.stringify(output.sheets.outer))
     // outerSheets.map(sheet => console.log(sheet.length))
     // sheets.map(sheet => sheet.map(console.log))
