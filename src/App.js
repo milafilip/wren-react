@@ -10,6 +10,7 @@ import Ruler from "./components/Ruler";
 import { bounds } from "./utils/points";
 import { intersect } from "mathjs";
 import { loopifyInPairs } from "./utils/list";
+import { svgPoint } from "./utils/svg";
 
 class App extends Component {
   actions = {
@@ -34,13 +35,9 @@ class App extends Component {
     layers: new Set()
   };
 
-  svgPoint = (x, y) => {
-    let point = this.refs.svg.createSVGPoint();
-    point.x = x;
-    point.y = y;
-    point = point.matrixTransform(this.refs.svg.getCTM().inverse());
-    return [Math.floor(point.x), Math.floor(point.y)];
-  };
+  componentDidMount() {
+    this.svgPoint = svgPoint(this.refs.svg)
+  }
 
   handleLineDoubleClick = index => e => {
     e.stopPropagation();
@@ -109,12 +106,6 @@ class App extends Component {
     });
   };
 
-  setActivePoint = id => e => {
-    e.stopPropagation();
-    console.log("active point");
-    this.setState({ action: [this.actions.DRAGGING_POINTS, [id]] });
-  };
-
   handleGuideLineMouseDown = (axis, index) => e => {
     console.log({ axis, index });
     e.stopPropagation();
@@ -152,10 +143,6 @@ class App extends Component {
     // this.setState({ dragRect: { x, y } });
   };
 
-  setCursor = cursor => {
-    this.setState({ cursor });
-  };
-
   handleDoubleClickPoint = (point, auto) => event => {
     event.stopPropagation();
     if (auto) return;
@@ -171,6 +158,16 @@ class App extends Component {
       );
       return prevState;
     });
+  };
+
+  setActivePoint = id => e => {
+    e.stopPropagation();
+    console.log("active point");
+    this.setState({ action: [this.actions.DRAGGING_POINTS, [id]] });
+  };
+
+  setCursor = cursor => {
+    this.setState({ cursor });
   };
 
   points = safePoints => {
