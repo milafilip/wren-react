@@ -36,7 +36,7 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.svgPoint = svgPoint(this.refs.svg)
+    this.svgPoint = svgPoint(this.refs.svg);
   }
 
   handleLineDoubleClick = index => e => {
@@ -164,10 +164,6 @@ class App extends Component {
     e.stopPropagation();
     console.log("active point");
     this.setState({ action: [this.actions.DRAGGING_POINTS, [id]] });
-  };
-
-  setCursor = cursor => {
-    this.setState({ cursor });
   };
 
   points = safePoints => {

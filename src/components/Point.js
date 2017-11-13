@@ -12,7 +12,7 @@ class Point extends Component {
       auto,
       handleDoubleClickPoint
     } = this.props;
-    const radius = inputs.fin.width / 2
+    const radius = inputs.fin.width / 2;
     // const radius = 60
     return (
       <circle
