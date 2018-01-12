@@ -29,11 +29,11 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.svgPoint = svgPoint(this.refs.svg);
+    this.svgPoint = svgPoint(this.refs.svg, this.refs.g);
   }
 
   handleLineClick = index => e => {
-    e.stopPropagation();
+    // e.stopPropagation();
     const point = this.svgPoint(e.pageX, e.pageY);
     const i = index + 1;
 
@@ -90,7 +90,7 @@ class App extends Component {
   };
 
   handleMouseDownOnRuler = axis => e => {
-    e.stopPropagation();
+    // e.stopPropagation();
     console.log("RULER", axis);
     this.setState(prevState => {
       prevState.guideLines[axis].push(10);
@@ -101,7 +101,7 @@ class App extends Component {
 
   handleGuideLineMouseDown = (axis, index) => e => {
     console.log({ axis, index });
-    e.stopPropagation();
+    // e.stopPropagation();
     this.setState({ action: [actions.DRAGGING_GUIDE, [axis, index]] });
     console.log(this.state.action);
   };
@@ -137,7 +137,7 @@ class App extends Component {
   };
 
   handleDoubleClickPoint = (point, auto) => event => {
-    event.stopPropagation();
+    // event.stopPropagation();
     if (auto) return;
     this.setState(prevState => {
       console.log(
@@ -154,7 +154,7 @@ class App extends Component {
   };
 
   setActivePoint = id => e => {
-    e.stopPropagation();
+    // e.stopPropagation();
     console.log("active point");
     this.setState({ action: [actions.DRAGGING_POINTS, [id]] });
   };
@@ -178,7 +178,7 @@ class App extends Component {
   };
 
   toggleLayer = layerName => e => {
-    e.stopPropagation();
+    // e.stopPropagation();
     this.setState(prevState => {
       prevState.layers.has(layerName)
         ? prevState.layers.delete(layerName)
@@ -267,7 +267,7 @@ class App extends Component {
           onMouseUp={this.handleMouseUp}
           onMouseDown={this.handleMouseDown}
         >
-          <g transform="scale(1)">
+          <g transform="scale(1)" ref="g">
             <Lines
               points={safePoints}
               originalPoints={originalPoints}

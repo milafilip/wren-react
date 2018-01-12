@@ -4,9 +4,10 @@ const _getXY = (start, end) => [end[0] - start[0], end[1] - start[1]];
  * Rotates a point rotated around a given axis point (in radians)
  * @returns {Array}
  */
-export const rotateAroundPoint = ([originX, originY], angle = 0) => (
-  [pointX, pointY]
-) => {
+export const rotateAroundPoint = ([originX, originY], angle = 0) => ([
+  pointX,
+  pointY
+]) => {
   return [
     Math.cos(angle) * (pointX - originX) -
       Math.sin(angle) * (pointY - originY) +
