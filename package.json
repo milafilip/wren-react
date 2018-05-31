@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cp -R public dist && PRODUCTION=true webpack -p",
+    "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "prettier --write \"src/**/*.{js,json,css}\"",
